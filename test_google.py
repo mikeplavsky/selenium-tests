@@ -15,7 +15,6 @@ def setup_driver(browser):
   driver = webdriver.Remote("http://10.8.105.107:4444/wd/hub", browser)       
   driver.implicitly_wait(10)
 
-
 def teardown_driver():
 
   global driver
@@ -31,11 +30,9 @@ def get_google():
   el.send_keys( "Cheese" )
   el.submit()
 
-
 @with_setup(lambda: setup_driver(ie), teardown_driver)
 def test_ie():
   get_google()
-
 
 @with_setup(lambda: setup_driver(chrome), teardown_driver)
 def test_chrome():
