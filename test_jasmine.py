@@ -2,7 +2,7 @@ from selenium import webdriver
 from nose.tools import eq_,with_setup
 from selenium.webdriver.support.ui import WebDriverWait
 
-_multiprocess_can_split_ = True
+multiprocess_can_split_ = True
 
 driver = None
 
@@ -19,11 +19,28 @@ def get_hub_ip():
 
 hub_ip = get_hub_ip()
 
-import socket
-tests_ip = socket.gethostbyname(socket.gethostname())
-tests_url = "http://%s:9294/test" % tests_ip
+tests_url = None
+hem = None
 
 def setup_f(browser):
+
+  import socket
+
+  tests_ip = socket.gethostbyname(socket.gethostname())
+
+  s = socket.socket()
+  s.bind(('',0))
+  port = s.getsockname()[1]
+
+  del s
+  
+  global hem
+  import subprocess
+
+  hem = subprocess.Popen( ("./node_modules/hem/bin/hem", "server", "--port=%s" % port) )
+
+  global tests_url
+  tests_url = "http://%s:%s/test" % (tests_ip,port)
   
   global driver
   driver = webdriver.Remote("http://%s:4444/wd/hub" % hub_ip, browser)       
@@ -34,6 +51,11 @@ def teardown_f():
 
   driver.quit()
   driver = None
+
+  global hem
+
+  hem.terminate()
+  hem = None
 
 def run():
 
