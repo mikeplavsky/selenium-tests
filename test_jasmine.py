@@ -37,7 +37,9 @@ def setup_f(browser):
   global hem
   import subprocess
 
-  hem = subprocess.Popen( ("./node_modules/hem/bin/hem", "server", "--port=%s" % port) )
+  import os
+  cwd = os.path.dirname(os.path.abspath( __file__ ))
+  hem = subprocess.Popen( ("../node_modules/hem/bin/hem", "server", "--port=%s" % port), cwd = cwd )
 
   global tests_url
   tests_url = "http://%s:%s/test" % (tests_ip,port)
